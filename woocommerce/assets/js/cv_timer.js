@@ -59,9 +59,14 @@
 		// check to see if browser is able to create websockets
 		if( typeof(WebSocket) == "function" ) {
 			var websocket;
-			websocket = "wss://";
+                       	if (location.protocol == "http:") {
+                       	        websocket = "ws://";
+                       	} else if (location.protocol == "https:") {
+                       	        websocket = "wss://";
+                       	}
+			var host = $("wsUrl").text()
 			// Create a socket
-			var socket = new WebSocket(websocket+window.location.host+'/paymentportal/check?code='+$("#paymentCode").text());
+			var socket = new WebSocket(websocket+host+'/paymentportal/check?code='+$("#paymentCode").text());
 			// Message received on the socket
 			socket.onmessage = function(event) {
 				data = JSON.parse(event.data);

@@ -600,7 +600,7 @@ function woocommerce_coinvoice_init() {
 			if (!$this->post_invoice($order_id, $coinvoiceReply)) {
 				return;
 			}
-
+			$url = $coinvoiceReply->CoinvoiceUrl
 			$link = 'bitcoin:'.$coinvoiceReply->BtcAddress.
 				'?amount='.$coinvoiceReply->TotalBtc.
 				'&label=Coinvoice';
@@ -609,6 +609,7 @@ function woocommerce_coinvoice_init() {
 				Thank you for your order, please pay as indicated
 			</p>
 			<div id="btcPaymentInfo">
+				<span id="wsUrl" style="display:none;"><?php $url ?></span>
 				<span id="paymentCode" style="display:none;"><?php echo $coinvoiceReply->PaymentLinkId; ?></span>
 				<span id="endTime" style="display:none;"><?php echo date('c',$coinvoiceReply->ExpirationTime); ?></span>
 				<div class="green">
@@ -916,7 +917,11 @@ function woocommerce_coinvoice_init() {
 				CvError(__('Internal error(6): status = ', 'woothemes').$coinvoiceReply->Status);
 				return false;
 			}
-
+			if ($this->get_option('sandbox') === 'yes') {
+				$coinvoiceReply->CoinvoiceUrl = $coinvoice->GetSandboxHostName();
+			} else {
+				$coinvoiceReply->CoinvoiceUrl = $coinvoice->GetHostName();
+			}
 			$reply = $coinvoiceReply;
 			return true;
 		}
